@@ -1,4 +1,22 @@
+using DotnetAPI;
+using DotnetAPI.Data;
+using Microsoft.EntityFrameworkCore;
+
+
 var builder = WebApplication.CreateBuilder(args);
+
+/*IConfiguration config = new ConfigurationBuilder()
+  .AddJsonFile("appsettings.json")
+  .Build();
+DataContextEF dataContextEF= new(config);
+
+User user = new(){
+  Name = "Renan",
+};
+
+
+dataContextEF.Add(user);
+dataContextEF.SaveChanges(); */
 
 // Add services to the container.
 
@@ -6,6 +24,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services
+  .AddEntityFrameworkNpgsql()
+  .AddDbContext<DataContextEF>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 builder.Services.AddCors((options) => 
 {

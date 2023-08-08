@@ -1,27 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\renantorres\\Documents\\dotnet\\DotnetAPI\\DotnetAPI.csproj": {}
+    "/Users/renandesouza/dev/dotnet/dotnetapi/DotnetAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\renantorres\\Documents\\dotnet\\DotnetAPI\\DotnetAPI.csproj": {
+    "/Users/renandesouza/dev/dotnet/dotnetapi/DotnetAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\renantorres\\Documents\\dotnet\\DotnetAPI\\DotnetAPI.csproj",
+        "projectUniqueName": "/Users/renandesouza/dev/dotnet/dotnetapi/DotnetAPI.csproj",
         "projectName": "DotnetAPI",
-        "projectPath": "C:\\Users\\renantorres\\Documents\\dotnet\\DotnetAPI\\DotnetAPI.csproj",
-        "packagesPath": "C:\\Users\\renantorres\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\renantorres\\Documents\\dotnet\\DotnetAPI\\obj\\",
+        "projectPath": "/Users/renandesouza/dev/dotnet/dotnetapi/DotnetAPI.csproj",
+        "packagesPath": "/Users/renandesouza/.nuget/packages/",
+        "outputPath": "/Users/renandesouza/dev/dotnet/dotnetapi/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\renantorres\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/renandesouza/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "/usr/local/share/dotnet/sdk/7.0.306/Sdks/Microsoft.NET.Sdk.Web/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -43,6 +42,28 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[7.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.9, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[7.0.4, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL.Design": {
+              "target": "Package",
+              "version": "[1.1.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -68,7 +89,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.306/RuntimeIdentifierGraph.json"
         }
       }
     }
