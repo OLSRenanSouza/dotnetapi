@@ -7,19 +7,19 @@ using Microsoft.EntityFrameworkCore;
 namespace DotnetAPI.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class UserController : ControllerBase
 {
 
-  private readonly ILogger<WeatherForecastController> _logger;
+  private readonly ILogger<UserController> _logger;
   private readonly DataContextEF _context;
 
-  public UserController(ILogger<WeatherForecastController> logger, DataContextEF context)
+  public UserController(ILogger<UserController> logger, DataContextEF context)
   {
       _logger = logger;
       _context = context;
   }
-  [HttpPost]
+  [HttpPost("")]
   public async Task<ActionResult<User>> CreateUser(CreateUserDTO userDTO)
   {
     _logger.LogInformation("CreateUser has been called.");
@@ -40,20 +40,24 @@ public class UserController : ControllerBase
     if (_context.Users != null)
     {
       _context.Users.Add(user);
-      await _context.SaveChangesAsync();
-      return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+      // _constext.SaveChanges return de number of rows that were modified.
+      if (await _context.SaveChangesAsync() > 0)
+      {
+        return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+      }
+      throw new Exception("Error to Add this User");
     }
     return StatusCode(500);
 
   }
 
-  [HttpGet("/{id}")]
+  [HttpGet("{id}")]
   public async Task<ActionResult<User>> GetUser(int id)
   {
     _logger.LogInformation("GetUsers has been called.");
     if (_context.Users != null)
     {
-      var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
+      User? user = await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
 
       return Ok(user);
     }
@@ -67,26 +71,26 @@ public class UserController : ControllerBase
     .ToArray();*/
   }
 
-  [HttpGet]
+  [HttpGet("")]
   public async Task<ActionResult<IEnumerable<User>>> GetUsers()
   {
     _logger.LogInformation("GetUsers has been called.");
     if (_context.Users != null)
     {
-      var users = await _context.Users.ToListAsync();
+      IEnumerable<User?> users = await _context.Users.ToListAsync();
   
       return Ok(users);
     }
     return StatusCode(500);
   }
 
-  [HttpPatch("/{id}")]
+  [HttpPatch("{id}")]
   public async Task<ActionResult<User>> PatchUser(int id,[FromBody] UpdateUserDTO updateUserDTO)
   {
     _logger.LogInformation("PatchUsers has been called.");
     if (_context.Users != null)
     {
-      var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
+      User? user = await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
       if (user == null)
      if (user == null) {
         return NotFound("User id: " + id + "not found");
@@ -94,9 +98,12 @@ public class UserController : ControllerBase
       if(updateUserDTO.Name != null) user.Name = updateUserDTO.Name;
       if(updateUserDTO.Email != null) user.Email = updateUserDTO.Email;
 
-      await _context.SaveChangesAsync();
+      if (await _context.SaveChangesAsync() > 0)
+      {
+        return Ok(user);
+      }
+      throw new Exception("Error to update User");
 
-      return Ok(user);
     }
     return StatusCode(500);
   }
@@ -107,7 +114,7 @@ public class UserController : ControllerBase
     _logger.LogInformation("DeleteUser has been called.");
     if (_context.Users != null)
     {
-      var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
+      User? user = await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
 
       if (user == null) 
       {
@@ -115,9 +122,11 @@ public class UserController : ControllerBase
       }
 
       _context.Users.Remove(user);
-      await _context.SaveChangesAsync();
+      if( await _context.SaveChangesAsync() > 0) {
+        return NoContent();
+      };
+      throw new Exception("Error to delete User");
 
-      return NoContent();
     }
     return StatusCode(500);
   }

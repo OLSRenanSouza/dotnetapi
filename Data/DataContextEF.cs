@@ -13,6 +13,7 @@ namespace DotnetAPI.Data
         // _conectionString = config.GetConnectionString("DefaultConnection");
     }
     public DbSet<User>? Users {get; set;}
+    public DbSet<Question> Questions{get; set;}
     /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
       if(!optionsBuilder.IsConfigured)
@@ -24,6 +25,7 @@ namespace DotnetAPI.Data
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       modelBuilder.Entity<User>().ToTable("User").HasKey(u => u.Id);
+      modelBuilder.Entity<Question>().ToTable("Questions").HasKey(u => u.Id);
     }
   }
 }
