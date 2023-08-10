@@ -1,7 +1,9 @@
-namespace DotnetAPI;
+namespace DotnetAPI.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
+[Index(nameof(User.Email), IsUnique = true)]
 public class User
 {
     [Key]
@@ -11,4 +13,5 @@ public class User
     public DateTime CreatedAt { get; set; }
 
     public string Name { get; set; } = "";
+    public string Email { get; set; } = "";
 }
