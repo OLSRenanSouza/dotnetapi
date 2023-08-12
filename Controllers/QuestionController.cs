@@ -11,13 +11,13 @@ namespace DotnetAPI.Controllers;
 [Route("api/[controller]")]
 public class QuestionController : ControllerBase
 {
-    private readonly ILogger<QuestionController> _logger;
+  private readonly ILogger<QuestionController> _logger;
   private readonly DataContextEF _context;
 
   public QuestionController(ILogger<QuestionController> logger, DataContextEF context)
   {
-      _logger = logger;
-      _context = context;
+    _logger = logger;
+    _context = context;
   }
   [HttpPost("")]
   public async Task<ActionResult<Question>> CreateQuestion(CreateQuestionDTO questionDTO)
@@ -26,7 +26,7 @@ public class QuestionController : ControllerBase
 
     if (questionDTO == null)
     {
-        return BadRequest("Question data is null.");
+      return BadRequest("Question data is null.");
     }
 
     Question question = new()
@@ -36,7 +36,7 @@ public class QuestionController : ControllerBase
       Tip = questionDTO.Tip,
       CreatedAt = DateTime.UtcNow
     };
-      
+
     if (_context.Questions != null)
     {
       _context.Questions.Add(question);
@@ -78,26 +78,27 @@ public class QuestionController : ControllerBase
     if (_context.Questions != null)
     {
       IEnumerable<Question?> questions = await _context.Questions.ToListAsync();
-  
+
       return Ok(questions);
     }
     return StatusCode(500);
   }
 
   [HttpPatch("{id}")]
-  public async Task<ActionResult<Question>> PatchQuestion(int id,[FromBody] UpdateQuestionDTO updateQuestionDTO)
+  public async Task<ActionResult<Question>> PatchQuestion(int id, [FromBody] UpdateQuestionDTO updateQuestionDTO)
   {
     _logger.LogInformation("PatchQuestions has been called.");
     if (_context.Questions != null)
     {
       Question? question = await _context.Questions.SingleOrDefaultAsync(u => u.Id == id);
       if (question == null)
-     if (question == null) {
-        return NotFound("Question id: " + id + "not found");
-      }
-      if(updateQuestionDTO.Body != null) question.Body = updateQuestionDTO.Body;
-      if(updateQuestionDTO.Answer != null) question.Answer = (char)updateQuestionDTO.Answer;
-      if(updateQuestionDTO.Tip != null) question.Tip = updateQuestionDTO.Tip;
+        if (question == null)
+        {
+          return NotFound("Question id: " + id + "not found");
+        }
+      if (updateQuestionDTO.Body != null) question.Body = updateQuestionDTO.Body;
+      if (updateQuestionDTO.Answer != null) question.Answer = (char)updateQuestionDTO.Answer;
+      if (updateQuestionDTO.Tip != null) question.Tip = updateQuestionDTO.Tip;
       question.LastUpdatedAt = DateTime.UtcNow;
 
       if (await _context.SaveChangesAsync() > 0)
@@ -118,13 +119,14 @@ public class QuestionController : ControllerBase
     {
       Question? question = await _context.Questions.SingleOrDefaultAsync(u => u.Id == id);
 
-      if (question == null) 
+      if (question == null)
       {
         return NotFound("Question id: " + id + "not found");
       }
 
       _context.Questions.Remove(question);
-      if( await _context.SaveChangesAsync() > 0) {
+      if (await _context.SaveChangesAsync() > 0)
+      {
         return NoContent();
       };
       throw new Exception("Error to delete Question");

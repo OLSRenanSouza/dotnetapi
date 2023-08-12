@@ -1,5 +1,6 @@
 using DotnetAPI;
 using DotnetAPI.Data;
+using DotnetAPI.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -29,16 +30,16 @@ builder.Services
   .AddDbContext<DataContextEF>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-builder.Services.AddCors((options) => 
+builder.Services.AddCors((options) =>
 {
-  options.AddPolicy("DevCors", (corsBuilder) => 
+  options.AddPolicy("DevCors", (corsBuilder) =>
   {
     corsBuilder.WithOrigins("http://localhost:3000")
       .AllowAnyMethod()
       .AllowAnyHeader()
       .AllowCredentials();
   });
-  options.AddPolicy("ProdCors", (corsBuilder) => 
+  options.AddPolicy("ProdCors", (corsBuilder) =>
   {
     corsBuilder.WithOrigins("https://engenhariadeconcursos.com.br")
       .AllowAnyMethod()
@@ -46,6 +47,8 @@ builder.Services.AddCors((options) =>
       .AllowCredentials();
   });
 });
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();
 

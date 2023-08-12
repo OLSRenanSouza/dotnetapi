@@ -1,4 +1,5 @@
 using DotnetAPI.Data;
+using DotnetAPI.Data.Repositories;
 using DotnetAPI.DTOs;
 using DotnetAPI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +13,12 @@ public class UserController : ControllerBase
 {
 
   private readonly ILogger<UserController> _logger;
-  private readonly DataContextEF _context;
+  private readonly IUserRepository _userRepository;
 
-  public UserController(ILogger<UserController> logger, DataContextEF context)
+  public UserController(ILogger<UserController> logger, IUserRepository userRepository)
   {
-      _logger = logger;
-      _context = context;
+    _logger = logger;
+    _userRepository = userRepository;
   }
   [HttpPost("")]
   public async Task<ActionResult<User>> CreateUser(CreateUserDTO userDTO)
@@ -26,7 +27,7 @@ public class UserController : ControllerBase
 
     if (userDTO == null || userDTO.Email == null)
     {
-        return BadRequest("User data or email is null.");
+      return BadRequest("User data or email is null.");
     }
 
     User user = new()
@@ -36,18 +37,15 @@ public class UserController : ControllerBase
       Email = userDTO.Email,
       CreatedAt = DateTime.UtcNow
     };
-      
-    if (_context.Users != null)
+
+
+    _userRepository.AddEntity<User>(user);
+    // _constext.SaveChanges return de number of rows that were modified.
+    if (await _userRepository.SaveChanges())
     {
-      _context.Users.Add(user);
-      // _constext.SaveChanges return de number of rows that were modified.
-      if (await _context.SaveChangesAsync() > 0)
-      {
-        return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
-      }
-      throw new Exception("Error to Add this User");
+      return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
     }
-    return StatusCode(500);
+    throw new Exception("Error to Add this User");
 
   }
 
@@ -55,80 +53,61 @@ public class UserController : ControllerBase
   public async Task<ActionResult<User>> GetUser(int id)
   {
     _logger.LogInformation("GetUsers has been called.");
-    if (_context.Users != null)
-    {
-      User? user = await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
+    User? user = await _userRepository.GetSingleUser(id);
 
-      return Ok(user);
-    }
-    return StatusCode(500);
-    /*return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-    {
-      Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-      TemperatureC = Random.Shared.Next(-20, 55),
-      Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-    })
-    .ToArray();*/
+    return Ok(user);
+
   }
 
   [HttpGet("")]
   public async Task<ActionResult<IEnumerable<User>>> GetUsers()
   {
     _logger.LogInformation("GetUsers has been called.");
-    if (_context.Users != null)
-    {
-      IEnumerable<User?> users = await _context.Users.ToListAsync();
-  
-      return Ok(users);
-    }
-    return StatusCode(500);
+    var users = await _userRepository.GetAllUsers();
+    return Ok(users);
   }
 
   [HttpPatch("{id}")]
-  public async Task<ActionResult<User>> PatchUser(int id,[FromBody] UpdateUserDTO updateUserDTO)
+  public async Task<ActionResult<User>> PatchUser(int id, [FromBody] UpdateUserDTO updateUserDTO)
   {
     _logger.LogInformation("PatchUsers has been called.");
-    if (_context.Users != null)
-    {
-      User? user = await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
+
+    User? user = await _userRepository.GetSingleUser(id);
+    if (user == null)
       if (user == null)
-     if (user == null) {
+      {
         return NotFound("User id: " + id + "not found");
       }
-      if(updateUserDTO.Name != null) user.Name = updateUserDTO.Name;
-      if(updateUserDTO.Email != null) user.Email = updateUserDTO.Email;
+    if (updateUserDTO.Name != null) user.Name = updateUserDTO.Name;
+    if (updateUserDTO.Email != null) user.Email = updateUserDTO.Email;
 
-      if (await _context.SaveChangesAsync() > 0)
-      {
-        return Ok(user);
-      }
-      throw new Exception("Error to update User");
-
+    if (await _userRepository.SaveChanges())
+    {
+      return Ok(user);
     }
-    return StatusCode(500);
+    throw new Exception("Error to update User");
+
   }
 
   [HttpDelete("{id}")]
   public async Task<ActionResult> DeleteUser(int id)
   {
     _logger.LogInformation("DeleteUser has been called.");
-    if (_context.Users != null)
+
+    User? user = await _userRepository.GetSingleUser(id);
+
+    if (user == null)
     {
-      User? user = await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
-
-      if (user == null) 
-      {
-        return NotFound("User id: " + id + "not found");
-      }
-
-      _context.Users.Remove(user);
-      if( await _context.SaveChangesAsync() > 0) {
-        return NoContent();
-      };
-      throw new Exception("Error to delete User");
-
+      return NotFound("User id: " + id + "not found");
     }
-    return StatusCode(500);
+
+    _userRepository.RemoveEntity<User>(user);
+    if (await _userRepository.SaveChanges())
+    {
+      return NoContent();
+    };
+    throw new Exception("Error to delete User");
+
   }
 
 
